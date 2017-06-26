@@ -127,13 +127,13 @@ void display()
   //Mars
   planet(1.5*earthdist, 0.53*earthsize, 687.0, 24.0);
   //Jupiter
-  planet(3.0*earthdist, 2.0*earthsize, 4329.0, 10.0);
+  planet(3.0*earthdist, 11.0*earthsize, 4329.0, 10.0);
   //Saturn
-  planet(4.0*earthdist, 2.0*earthsize, 10751.0, 10.0);
+  planet(6.0*earthdist, 9.0*earthsize, 10751.0, 10.0);
   //Uranus
-  planet(6.0*earthdist, 1.5*earthsize, 30664.0, 17.0);
+  planet(8.0*earthdist, 4.0*earthsize, 30664.0, 17.0);
   //Neptun
-  planet(7.0*earthdist, 1.5*earthsize, 60148.0, 15.0);
+  planet(11.0*earthdist, 3.8*earthsize, 60148.0, 15.0);
 
   glutSwapBuffers();
 }
