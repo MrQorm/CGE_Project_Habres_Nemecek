@@ -1,4 +1,5 @@
 #include <stdlib.h> // for exit
+#include "planet.h"
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -54,47 +55,6 @@ static void specialKeyPressed(int key, int x, int y)
   }
 }
 
-void planet(float dist, float size, float circTime, float dayLength)
-{
-	glPushMatrix();
-	glRotatef(360.0*day / circTime, 0.0, 1.0, 0.0);
-	glTranslatef(dist, 0.0, 0.0);
-
-	glPushMatrix();
-	// rotate the planet on its axis
-	glRotatef(360.0*hour / dayLength, 0.0, 1.0, 0.0);
-	glColor3f(1.0, 1.0, 1.0);
-	glScalef(0.50, 0.50, 0.50);
-	glutWireSphere(size, 10, 10);
-	glPopMatrix();
-	glPopMatrix();
-}
-
-void earth()
-{
-	glPushMatrix();
-	// earth
-	// position around the sun
-	glRotatef(360.0*day / 365.0, 0.0, 1.0, 0.0);
-	glTranslatef(earthdist, 0.0, 0.0);
-
-	glPushMatrix();
-	// rotate the earth on its axis
-	glRotatef(360.0*hour / 24.0, 0.0, 1.0, 0.0);
-	glColor3f(1.0, 1.0, 1.0);
-	glScalef(0.50, 0.50, 0.50);
-	glutWireSphere(earthsize, 10, 10);
-	glPopMatrix();
-
-	// moon
-	glRotatef(360.0 * 4 * day / 365.0, 0.0, 1.0, 0.0);
-	glTranslatef(0.7f, 0.0f, 0.0f);
-	glColor3f(0.3f, 0.7f, 0.3f);
-	glutWireSphere(0.1f, 10, 10);
-
-	glPopMatrix();
-}
-
 void display()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -116,24 +76,24 @@ void display()
 
   // sun
   glColor3f(1.0, 1.0, 0.0);
-  glutWireSphere(1.0, 50, 50);
+  glutWireSphere(2.5 * earthsize, 50, 50);
 
   //Merkur
-  planet(0.3*earthdist, 0.38*earthsize, 88.0, 58.0 * 24.0);
+  planet(0.3*earthdist, 0.38*earthsize, 88.0, 58.0 * 24.0, day, hour);
   //Venus
-  planet(0.6*earthdist, 0.95*earthsize, 225.0, 243.0 * 24.0);
+  planet(0.6*earthdist, 0.95*earthsize, 225.0, 243.0 * 24.0, day, hour);
   //Erde
-  earth();
+  earth(day, hour);
   //Mars
-  planet(1.5*earthdist, 0.53*earthsize, 687.0, 24.0);
+  planet(1.5*earthdist, 0.53*earthsize, 687.0, 24.0, day, hour);
   //Jupiter
-  planet(3.0*earthdist, 11.0*earthsize, 4329.0, 10.0);
+  planet(3.0*earthdist, 2.0*earthsize, 4329.0, 10.0, day, hour);
   //Saturn
-  planet(6.0*earthdist, 9.0*earthsize, 10751.0, 10.0);
+  planet(4.0*earthdist, 2.0*earthsize, 10751.0, 10.0, day, hour);
   //Uranus
-  planet(8.0*earthdist, 4.0*earthsize, 30664.0, 17.0);
+  planet(5.0*earthdist, 1.5*earthsize, 30664.0, 17.0, day, hour);
   //Neptun
-  planet(11.0*earthdist, 3.8*earthsize, 60148.0, 15.0);
+  planet(6.0*earthdist, 1.5*earthsize, 60148.0, 15.0, day, hour);
 
   glutSwapBuffers();
 }

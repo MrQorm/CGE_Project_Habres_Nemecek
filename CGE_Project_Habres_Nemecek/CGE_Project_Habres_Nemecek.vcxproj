@@ -115,7 +115,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="planet.c" />
     <ClCompile Include="solar.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="planet.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
