@@ -14,7 +14,7 @@ void planet(float dist, float size, float circTime, float dayLength, int day, in
 	glRotatef(360.0*hour / dayLength, 0.0, 1.0, 0.0);
 	glColor3f(1.0, 1.0, 1.0);
 	glScalef(0.50, 0.50, 0.50);
-	glutWireSphere(size, 10, 10);
+	glutSolidSphere(size, 30, 30);
 	glPopMatrix();
 	glPopMatrix();
 }
@@ -32,14 +32,14 @@ void earth(int day, int hour)
 	glRotatef(360.0*hour / 24.0, 0.0, 1.0, 0.0);
 	glColor3f(1.0, 1.0, 1.0);
 	glScalef(0.50, 0.50, 0.50);
-	glutWireSphere(0.4, 10, 10);
+	glutSolidSphere(0.4, 20, 20);
 	glPopMatrix();
 
 	// moon
 	glRotatef(360.0 * 4 * day / 365.0, 0.0, 1.0, 0.0);
 	glTranslatef(0.7f, 0.0f, 0.0f);
 	glColor3f(0.3f, 0.7f, 0.3f);
-	glutWireSphere(0.1f, 10, 10);
+	glutSolidSphere(0.1f, 10, 10);
 
 	glPopMatrix();
 }
