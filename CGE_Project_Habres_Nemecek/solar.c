@@ -1,6 +1,9 @@
 #include <stdlib.h> // for exit
 #include "planet.h"
+#include "tga.h"
+#include "glext.h"
 #include <math.h>
+#include <stdio.h>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -17,7 +20,8 @@
 #endif
 
 #define RAD(x) (((x)*M_PI)/180.)
-
+#define _CRT_SECURE_NO_WARNINGS
+#define GL_CLAMP_TO_EDGE 0x812F
 int window; 
 
 float hour = 0.0;
@@ -36,7 +40,7 @@ GLfloat angle_y = 0.0;
 GLfloat pos_x = 0.0;
 GLfloat pos_y = 0.0;
 GLfloat pos_z = 0.0;
-
+GLuint texture;
 int moving = 0;
 
 void resize(int width, int height)
@@ -139,9 +143,11 @@ void setLights()
 }
 
 
+
 void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
 
@@ -176,7 +182,7 @@ void display()
 	glEnable(GL_LIGHTING);
 
 	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };
+	GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat mat_shininess[] = { 100.0 };
 	setMaterial(mat_specular, mat_diffuse, mat_shininess);
 
@@ -185,7 +191,8 @@ void display()
 	//Venus
 	planet(0.6*earthdist, 0.95*earthsize, 225.0, 243.0 * 24.0, day, hour);
 	//Erde
-	earth(day, hour);
+	earth(day, hour, texture);
+
 	//Mars
 	planet(1.5*earthdist, 0.53*earthsize, 687.0, 24.0, day, hour);
 	//Jupiter
@@ -196,6 +203,10 @@ void display()
 	planet(5.0*earthdist, 1.5*earthsize, 30664.0, 17.0, day, hour);
 	//Neptun
 	planet(6.0*earthdist, 1.5*earthsize, 60148.0, 15.0, day, hour);
+
+
+
+
 
 	glPopMatrix();
 
@@ -257,6 +268,47 @@ void init(int width, int height)
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_FLAT);
 	resize(width, height);
+
+	//tga
+	GLsizei w, h;
+	tgaInfo *info = 0;
+	int mode;
+
+	info = tgaLoad("earthmap.tga");
+
+	if (info->status != TGA_OK) {
+		fprintf(stderr, "error loading texture image: %d\n", info->status);
+
+		return;
+	}
+	if (info->width != info->height) {
+		fprintf(stderr, "Image size %d x %d is not square, giving up.\n",
+			info->width, info->height);
+		return;
+	}
+
+	mode = info->pixelDepth / 8;  // will be 3 for rgb, 4 for rgba
+	glGenTextures(1, &texture);
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+
+	// Upload the texture bitmap. 
+	w = info->width;
+	h = info->height;
+
+	//reportGLError("before uploading texture");
+	GLint format = (mode == 4) ? GL_RGBA : GL_RGB;
+	glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format,
+		GL_UNSIGNED_BYTE, info->imageData);
+	//reportGLError("after uploading texture");
+
+	tgaDestroy(info);
 }
 
 void timer(int value)
@@ -282,9 +334,10 @@ int main(int argc, char **argv)
   glutKeyboardFunc(&keyPressed);
   glutSpecialFunc(&specialKeyPressed);
   
-  init(640, 480);
   glutMouseFunc(mouse);
   glutMotionFunc(mouseMotion);
+  init(640, 480);
+
   glutMainLoop();
   return 0;
 }

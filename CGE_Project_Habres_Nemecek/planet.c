@@ -2,7 +2,10 @@
 #include <GL/glut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <stdio.h>
+#include "glext.h"
 
+#define _CRT_SECURE_NO_WARNINGS
 void planet(float dist, float size, float circTime, float dayLength, int day, int hour)
 {
 	glPushMatrix();
@@ -19,8 +22,21 @@ void planet(float dist, float size, float circTime, float dayLength, int day, in
 	glPopMatrix();
 }
 
-void earth(int day, int hour)
+void earth(int day, int hour, GLuint texture )
 {
+	GLUquadricObj *sphere = NULL;
+	sphere = gluNewQuadric();
+	gluQuadricDrawStyle(sphere, GLU_FILL);
+	gluQuadricTexture(sphere, 1);
+	gluQuadricNormals(sphere, GLU_FLAT);
+	//gluQuadricOrientation(sphere, GLU_OUTSIDE);
+	//Making a display list
+	int mysphereID;
+	mysphereID = glGenLists(1);
+	glNewList(mysphereID, GL_COMPILE);
+	gluSphere(sphere, 0.4, 20, 20);
+	glEndList();
+	gluDeleteQuadric(sphere);
 	glPushMatrix();
 	// earth
 	// position around the sun
@@ -29,10 +45,29 @@ void earth(int day, int hour)
 
 	glPushMatrix();
 	// rotate the earth on its axis
-	glRotatef(360.0*hour / 24.0, 0.0, 1.0, 0.0);
+	//glRotatef(360.0*hour / 24.0, 0.0, 1.0, 0.0);
 	glColor3f(1.0, 1.0, 1.0);
 	glScalef(0.50, 0.50, 0.50);
-	glutSolidSphere(0.4, 20, 20);
+	glEnable(GL_TEXTURE_2D);
+	//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//glBindTexture(GL_TEXTURE_2D, texture);
+	//gluQuadricTexture(sphere, 1);
+	//gluSphere(sphere, 2, 20, 20);
+	glCallList(mysphereID);
+
+	/*GLUquadricObj *sphere = NULL;
+	sphere = gluNewQuadric();
+	gluQuadricDrawStyle(sphere, GLU_FILL);
+	gluQuadricTexture(sphere, 1);
+	gluQuadricNormals(sphere, GLU_FLAT);
+	gluSphere(sphere, 0.4, 20, 20);*/
+	//glutSolidSphere(0.4, 20, 20);
+	glDisable(GL_TEXTURE_2D);
+
 	glPopMatrix();
 
 	// moon
@@ -43,3 +78,4 @@ void earth(int day, int hour)
 
 	glPopMatrix();
 }
+
