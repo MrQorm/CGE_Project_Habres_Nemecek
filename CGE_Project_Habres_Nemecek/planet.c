@@ -14,7 +14,7 @@ void planet(float dist, float size, float circTime, float dayLength, int day, in
 	glRotatef(360.0*hour / dayLength, 0.0, 1.0, 0.0);
 	glColor3f(1.0, 1.0, 1.0);
 	glScalef(0.50, 0.50, 0.50);
-	glutSolidSphere(size, 30, 30);
+	glutSolidSphere(size, 50, 50);
 	glPopMatrix();
 	glPopMatrix();
 }

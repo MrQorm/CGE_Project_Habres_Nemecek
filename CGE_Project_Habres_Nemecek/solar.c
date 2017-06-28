@@ -116,7 +116,7 @@ static void specialKeyPressed(int key, int x, int y)
 
 void setMaterial(GLfloat spec[], GLfloat diff[], GLfloat shine[])
 {
-	glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
+	//glMaterialfv(GL_FRONT, GL_SPECULAR, spec);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, diff);
 	glMaterialfv(GL_FRONT, GL_SHININESS, shine);
 }
@@ -177,7 +177,7 @@ void display()
 
 	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };
-	GLfloat mat_shininess[] = { 100.0 };
+	GLfloat mat_shininess[] = { 128.0 };
 	setMaterial(mat_specular, mat_diffuse, mat_shininess);
 
 	//Merkur
@@ -229,21 +229,21 @@ void mouse(int button, int state, int x, int y)
 
 void mouseMotion(int x, int y) {
 
-	//if (moving) 
-	//{ /* mouse button is pressed */
+	if (moving) 
+	{ /* mouse button is pressed */
 
-	//	/* calculate new modelview matrix values */
-	//	angle_y = angle_y + (x - begin_x);
-	//	angle_x = angle_x + (y - begin_y);
-	//	if (angle_x > 360.0) angle_x -= 360.0;
-	//	else if (angle_x < -360.0) angle_x += 360.0;
-	//	if (angle_y > 360.0) angle_y -= 360.0;
-	//	else if (angle_y < -360.0) angle_y += 360.0;
+		/* calculate new modelview matrix values */
+		angle_y = angle_y + (x - begin_x);
+		angle_x = angle_x + (y - begin_y);
+		if (angle_x > 360.0) angle_x -= 360.0;
+		else if (angle_x < -360.0) angle_x += 360.0;
+		if (angle_y > 360.0) angle_y -= 360.0;
+		else if (angle_y < -360.0) angle_y += 360.0;
 
-	//	begin_x = x;
-	//	begin_y = y;
-	//	glutPostRedisplay();
-	//}
+		begin_x = x;
+		begin_y = y;
+		glutPostRedisplay();
+	}
 }
 
 
