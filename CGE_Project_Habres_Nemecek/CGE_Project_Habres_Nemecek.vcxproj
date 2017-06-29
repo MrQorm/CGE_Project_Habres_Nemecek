@@ -132,6 +132,16 @@
     <Image Include="earthmap.tga" />
     <Image Include="elf.tga" />
     <Image Include="jupiter.tga" />
+    <Image Include="jupitermap.tga" />
+    <Image Include="marsmap.tga" />
+    <Image Include="mercurymap.tga" />
+    <Image Include="moonmap.tga" />
+    <Image Include="neptunemap.tga" />
+    <Image Include="plutomap.tga" />
+    <Image Include="saturnmap.tga" />
+    <Image Include="sunmap.tga" />
+    <Image Include="uranusmap.tga" />
+    <Image Include="venusmap.tga" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

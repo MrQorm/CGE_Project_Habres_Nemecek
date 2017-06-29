@@ -40,7 +40,7 @@ GLfloat angle_y = 0.0;
 GLfloat pos_x = 0.0;
 GLfloat pos_y = 0.0;
 GLfloat pos_z = 0.0;
-GLuint texture;
+GLuint texture[11];
 int moving = 0;
 
 void resize(int width, int height)
@@ -177,32 +177,46 @@ void display()
 
 	// sun
 	glDisable(GL_LIGHTING);
-	glColor3f(1.0, 1.0, 0.0);
-	glutWireSphere(2.5 * earthsize, 50, 50);
+	//glColor3f(1.0, 1.0, 0.0);
+	GLUquadricObj *qObj = gluNewQuadric();
+
+	gluQuadricNormals(qObj, GLU_SMOOTH);
+	gluQuadricTexture(qObj, GL_TRUE);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 1);    // texID is the texture ID of a
+
+										// previously generated texture
+
+
+
+	gluSphere(qObj, 2.5 * earthsize, 50, 50);
+
+	glDisable(GL_TEXTURE_2D);
+	//glutWireSphere(2.5 * earthsize, 50, 50);
 	glEnable(GL_LIGHTING);
 
 	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };
 	GLfloat mat_shininess[] = { 100.0 };
 	setMaterial(mat_specular, mat_diffuse, mat_shininess);
 
 	//Merkur
-	planet(0.3*earthdist, 0.38*earthsize, 88.0, 58.0 * 24.0, day, hour);
+	planet(0.3*earthdist, 0.38*earthsize, 88.0, 58.0 * 24.0, day, hour,5);
 	//Venus
-	planet(0.6*earthdist, 0.95*earthsize, 225.0, 243.0 * 24.0, day, hour);
+	planet(0.6*earthdist, 0.95*earthsize, 225.0, 243.0 * 24.0, day, hour,10);
 	//Erde
 	earth(day, hour, texture);
 
 	//Mars
-	planet(1.5*earthdist, 0.53*earthsize, 687.0, 24.0, day, hour);
+	planet(1.5*earthdist, 0.53*earthsize, 687.0, 24.0, day, hour,4);
 	//Jupiter
-	planet(3.0*earthdist, 2.0*earthsize, 4329.0, 10.0, day, hour);
+	planet(3.0*earthdist, 2.0*earthsize, 4329.0, 10.0, day, hour,3);
 	//Saturn
-	planet(4.0*earthdist, 2.0*earthsize, 10751.0, 10.0, day, hour);
+	planet(4.0*earthdist, 2.0*earthsize, 10751.0, 10.0, day, hour,8);
 	//Uranus
-	planet(5.0*earthdist, 1.5*earthsize, 30664.0, 17.0, day, hour);
+	planet(5.0*earthdist, 1.5*earthsize, 30664.0, 17.0, day, hour,9);
 	//Neptun
-	planet(6.0*earthdist, 1.5*earthsize, 60148.0, 15.0, day, hour);
+	planet(6.0*earthdist, 1.5*earthsize, 60148.0, 15.0, day, hour,6);
 
 
 
@@ -268,47 +282,55 @@ void init(int width, int height)
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_FLAT);
 	resize(width, height);
+	char* textureNames[] = {  "sunmap.tga",  "earthmap.tga", "jupitermap.tga" , "marsmap.tga" , "mercurymap.tga"
+					,  "neptunemap.tga" , "plutomap.tga" , "saturnmap.tga" 
+					, "uranusmap.tga", "venusmap.tga","moonmap.tga" };
+	glGenTextures(11, texture);
+	for (int i = 0; i < 11; i++) {
+		//tga
+		GLsizei w, h;
+		tgaInfo *info = 0;
+		int mode;
 
-	//tga
-	GLsizei w, h;
-	tgaInfo *info = 0;
-	int mode;
+		info = tgaLoad(textureNames[i]);
 
-	info = tgaLoad("earthmap.tga");
+		if (info->status != TGA_OK) {
+			fprintf(stderr, "error loading texture image %s: %d\n",textureNames[i], info->status);
 
-	if (info->status != TGA_OK) {
-		fprintf(stderr, "error loading texture image: %d\n", info->status);
+			return;
+		}
+		if (info->width != info->height) {
+			fprintf(stderr, "Image size %d x %d is not square, giving up.\n",
+				info->width, info->height);
+			return;
+		}
 
-		return;
+		mode = info->pixelDepth / 8;  // will be 3 for rgb, 4 for rgba
+		
+
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		fprintf(stderr, "%i: \n", texture[i]);
+		glBindTexture(GL_TEXTURE_2D, texture[i]);
+		fprintf(stderr, "%i: \n \n", texture[i]);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+
+		// Upload the texture bitmap. 
+		w = info->width;
+		h = info->height;
+
+		//reportGLError("before uploading texture");
+		GLint format = (mode == 4) ? GL_RGBA : GL_RGB;
+		glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format,
+			GL_UNSIGNED_BYTE, info->imageData);
+		//reportGLError("after uploading texture");
+
+		tgaDestroy(info);
 	}
-	if (info->width != info->height) {
-		fprintf(stderr, "Image size %d x %d is not square, giving up.\n",
-			info->width, info->height);
-		return;
-	}
-
-	mode = info->pixelDepth / 8;  // will be 3 for rgb, 4 for rgba
-	glGenTextures(1, &texture);
-
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-
-	// Upload the texture bitmap. 
-	w = info->width;
-	h = info->height;
-
-	//reportGLError("before uploading texture");
-	GLint format = (mode == 4) ? GL_RGBA : GL_RGB;
-	glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format,
-		GL_UNSIGNED_BYTE, info->imageData);
-	//reportGLError("after uploading texture");
-
-	tgaDestroy(info);
 }
 
 void timer(int value)

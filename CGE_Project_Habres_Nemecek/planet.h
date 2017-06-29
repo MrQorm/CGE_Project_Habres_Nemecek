@@ -3,7 +3,7 @@
 #include <GL/glut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-void planet(float a, float b , float c, float x ,int k , int l);
+void planet(float a, float b , float c, float x ,int k , int l, int u);
 
 void earth(int y,int x, GLuint gl);
 #endif // PLANET_H
