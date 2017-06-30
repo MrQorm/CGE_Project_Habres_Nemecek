@@ -75,10 +75,10 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalUsingDirectories>%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>E:\FH\SS2017\CGE\CGE_Project_Habres_Nemecek\glut-3.7.6-bin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\glut-3.7.6-bin;C:\Users\Kyoto\gitrepos\CGE_Project_Habres_Nemecek\glut-3.7.6-bin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>E:\FH\SS2017\CGE\CGE_Project_Habres_Nemecek\glut-3.7.6-bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\glut-3.7.6-bin;C:\Users\Kyoto\gitrepos\CGE_Project_Habres_Nemecek\glut-3.7.6-bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -86,7 +86,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\Kyoto\gitrepos\CGE_Project_Habres_Nemecek\glut-3.7.6-bin;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>C:\Users\Kyoto\gitrepos\CGE_Project_Habres_Nemecek\glut-3.7.6-bin;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -117,9 +121,27 @@
   <ItemGroup>
     <ClCompile Include="planet.c" />
     <ClCompile Include="solar.c" />
+    <ClCompile Include="tga.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Downloads\9_07\cge\glext.h" />
     <ClInclude Include="planet.h" />
+    <ClInclude Include="tga.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="earthmap.tga" />
+    <Image Include="elf.tga" />
+    <Image Include="jupiter.tga" />
+    <Image Include="jupitermap.tga" />
+    <Image Include="marsmap.tga" />
+    <Image Include="mercurymap.tga" />
+    <Image Include="moonmap.tga" />
+    <Image Include="neptunemap.tga" />
+    <Image Include="plutomap.tga" />
+    <Image Include="saturnmap.tga" />
+    <Image Include="sunmap.tga" />
+    <Image Include="uranusmap.tga" />
+    <Image Include="venusmap.tga" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
