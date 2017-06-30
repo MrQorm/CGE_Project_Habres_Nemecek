@@ -172,7 +172,7 @@ void display()
 	// sun
 	glDisable(GL_LIGHTING);
 	glColor3f(1.0, 1.0, 0.0);
-	glutWireSphere(2.5 * earthsize, 50, 50);
+	glutSolidSphere(2.5 * earthsize, 50, 50);
 	glEnable(GL_LIGHTING);
 
 	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
@@ -184,6 +184,11 @@ void display()
 	planet(0.3*earthdist, 0.38*earthsize, 88.0, 58.0 * 24.0, day, hour);
 	//Venus
 	planet(0.6*earthdist, 0.95*earthsize, 225.0, 243.0 * 24.0, day, hour);
+
+	GLfloat mat_specular1[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_diffuse1[] = { 0.0, 1.0, 0.0, 1.0 };
+	GLfloat mat_shininess1[] = { 128.0 };
+	setMaterial(mat_specular1, mat_diffuse1, mat_shininess1);
 	//Erde
 	earth(day, hour);
 	//Mars
@@ -249,8 +254,6 @@ void mouseMotion(int x, int y) {
 
 void init(int width, int height)  
 {
-	setLights();
-
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClearDepth(1.0);
 	glDepthFunc(GL_LESS);
