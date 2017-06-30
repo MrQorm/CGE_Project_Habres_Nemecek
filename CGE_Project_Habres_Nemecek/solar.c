@@ -1,6 +1,9 @@
 #include <stdlib.h> // for exit
 #include "planet.h"
+#include "tga.h"
+#include "glext.h"
 #include <math.h>
+#include <stdio.h>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -17,7 +20,8 @@
 #endif
 
 #define RAD(x) (((x)*M_PI)/180.)
-
+#define _CRT_SECURE_NO_WARNINGS
+#define GL_CLAMP_TO_EDGE 0x812F
 int window; 
 
 float hour = 0.0;
@@ -36,8 +40,9 @@ GLfloat angle_y = 0.0;
 GLfloat pos_x = 0.0;
 GLfloat pos_y = 0.0;
 GLfloat pos_z = 0.0;
-
+GLuint texture[11];
 int moving = 0;
+int animating = 1;
 
 void resize(int width, int height)
 {
@@ -53,6 +58,7 @@ void resize(int width, int height)
 
 void keyPressed(unsigned char key, int x, int y) 
 {
+	int temp = 0;
 	switch (key) 
 	{
 		case 27:
@@ -77,10 +83,13 @@ void keyPressed(unsigned char key, int x, int y)
 			pos_z += cosf(RAD(angle_y)) * 0.5;
 			break;
 		case 'a':
-			angle_y -= 90;
+			angle_y -= 90;							//change angle to move sideways
+			temp = angle_x;
+			angle_x = 0;
 			pos_x += -sinf(RAD(angle_y)) * 0.5;
 			pos_y += sinf(RAD(angle_x)) * 0.5;
 			pos_z += cosf(RAD(angle_y)) * 0.5;
+			angle_x = temp;
 			angle_y += 90;
 			break;
 		case 's':
@@ -90,10 +99,23 @@ void keyPressed(unsigned char key, int x, int y)
 			break;
 		case 'd':
 			angle_y += 90;
+			temp = angle_x;
+			angle_x = 0;
 			pos_x += -sinf(RAD(angle_y)) * 0.5;
 			pos_y += sinf(RAD(angle_x)) * 0.5;
 			pos_z += cosf(RAD(angle_y)) * 0.5;
+			angle_x = temp;
 			angle_y -= 90;
+			break;
+		case ' ':
+			if (animating)
+			{
+				animating = 0;
+			}
+			else
+			{
+				animating = 1;
+			}
 			break;
 	}
 	if (angle_x > 360.0) angle_x -= 360.0;
@@ -139,68 +161,75 @@ void setLights()
 }
 
 
+
 void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
-
+	//set camera angles
 	gluLookAt(-sinf(RAD(angle_y)), sinf(RAD(angle_x)), cosf(RAD(angle_y)),
 		0., 0., 0.,
 		0., 1., 0.);
-
+	//set camera position
 	glTranslatef(pos_x, pos_y, pos_z);
 
 	glPushMatrix();
 
 	setLights();
 
-	hour += inc;
-	day += inc/24.0;
-	/*hour = hour - ((int)(hour/24))*24;
-	day = day - ((int)(day/365))*365;*/
-	hour = hour - ((int)(hour / longestDay)) * 24;
-	day = day - ((int)(day / longestYear)) * 365;
+	if (animating)
+	{
+		//recalculate animation variables
+		hour += inc;
+		day += inc / 24.0;
+		hour = hour - ((int)(hour / longestDay)) * 24;
+		day = day - ((int)(day / longestYear)) * 365;
+	}	
 
 	glTranslatef (0.0, 0.0, -50.0);
 
 	glRotatef(360*day/365.0, 0.0, 1.0, 0.0);
 
-	// ecliptic
+	// ecliptic movement
 	glRotatef(15.0, 1.0, 0.0, 0.0);
 
-	// sun
-	glDisable(GL_LIGHTING);
-	glColor3f(1.0, 1.0, 0.0);
-	glutSolidSphere(2.5 * earthsize, 50, 50);
-	glEnable(GL_LIGHTING);
-
 	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };
+	GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat mat_shininess[] = { 128.0 };
 	setMaterial(mat_specular, mat_diffuse, mat_shininess);
 
-	//Merkur
-	planet(0.3*earthdist, 0.38*earthsize, 88.0, 58.0 * 24.0, day, hour);
-	//Venus
-	planet(0.6*earthdist, 0.95*earthsize, 225.0, 243.0 * 24.0, day, hour);
+	// sun
+	glDisable(GL_LIGHTING);
+	GLUquadricObj *qObj = gluNewQuadric();
 
-	GLfloat mat_specular1[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat mat_diffuse1[] = { 0.0, 1.0, 0.0, 1.0 };
-	GLfloat mat_shininess1[] = { 128.0 };
-	setMaterial(mat_specular1, mat_diffuse1, mat_shininess1);
+	gluQuadricNormals(qObj, GLU_SMOOTH);
+	gluQuadricTexture(qObj, GL_TRUE);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 1);
+
+	gluSphere(qObj, 2.5 * earthsize, 50, 50);
+
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_LIGHTING);
+
+	//Merkur
+	planet(0.3*earthdist, 0.38*earthsize, 88.0, 58.0 * 24.0, day, hour,5);
+	//Venus
+	planet(0.6*earthdist, 0.95*earthsize, 225.0, 243.0 * 24.0, day, hour,10);
 	//Erde
-	earth(day, hour);
+	earth(day, hour, texture);
+
 	//Mars
-	planet(1.5*earthdist, 0.53*earthsize, 687.0, 24.0, day, hour);
+	planet(1.5*earthdist, 0.53*earthsize, 687.0, 24.0, day, hour,4);
 	//Jupiter
-	planet(3.0*earthdist, 2.0*earthsize, 4329.0, 10.0, day, hour);
+	planet(3.0*earthdist, 2.0*earthsize, 4329.0, 10.0, day, hour,3);
 	//Saturn
-	planet(4.0*earthdist, 2.0*earthsize, 10751.0, 10.0, day, hour);
+	planet(4.0*earthdist, 2.0*earthsize, 10751.0, 10.0, day, hour,8);
 	//Uranus
-	planet(5.0*earthdist, 1.5*earthsize, 30664.0, 17.0, day, hour);
+	planet(5.0*earthdist, 1.5*earthsize, 30664.0, 17.0, day, hour,9);
 	//Neptun
-	planet(6.0*earthdist, 1.5*earthsize, 60148.0, 15.0, day, hour);
+	planet(6.0*earthdist, 1.5*earthsize, 60148.0, 15.0, day, hour,6);
 
 	glPopMatrix();
 
@@ -251,6 +280,59 @@ void mouseMotion(int x, int y) {
 	}
 }
 
+void loadTextures()
+{
+	char* textureNames[] = { "textures/sunmap.tga",  "textures/earthmap.tga", "textures/jupitermap.tga" , "textures/marsmap.tga" , "textures/mercurymap.tga"
+		,  "textures/neptunemap.tga" , "textures/plutomap.tga" , "textures/saturnmap.tga"
+		, "textures/uranusmap.tga", "textures/venusmap.tga","textures/moonmap.tga" };
+	glGenTextures(11, texture);
+	for (int i = 0; i < 11; i++) {
+		//tga
+		GLsizei w, h;
+		tgaInfo *info = 0;
+		int mode;
+
+		info = tgaLoad(textureNames[i]);
+
+		if (info->status != TGA_OK) {
+			fprintf(stderr, "error loading texture image %s: %d\n", textureNames[i], info->status);
+
+			return;
+		}
+		if (info->width != info->height) {
+			fprintf(stderr, "Image size %d x %d is not square, giving up.\n",
+				info->width, info->height);
+			return;
+		}
+
+		mode = info->pixelDepth / 8;  // will be 3 for rgb, 4 for rgba
+
+
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		fprintf(stderr, "%i: \n", texture[i]);
+		glBindTexture(GL_TEXTURE_2D, texture[i]);
+		fprintf(stderr, "%i: \n \n", texture[i]);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+		// Upload the texture bitmap. 
+		w = info->width;
+		h = info->height;
+
+		//reportGLError("before uploading texture");
+		GLint format = (mode == 4) ? GL_RGBA : GL_RGB;
+		glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0, format,
+			GL_UNSIGNED_BYTE, info->imageData);
+		//reportGLError("after uploading texture");
+
+		tgaDestroy(info);
+	}
+}
+
 
 void init(int width, int height)  
 {
@@ -260,6 +342,7 @@ void init(int width, int height)
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_FLAT);
 	resize(width, height);
+	loadTextures();
 }
 
 void timer(int value)
@@ -285,9 +368,10 @@ int main(int argc, char **argv)
   glutKeyboardFunc(&keyPressed);
   glutSpecialFunc(&specialKeyPressed);
   
-  init(640, 480);
   glutMouseFunc(mouse);
   glutMotionFunc(mouseMotion);
+  init(640, 480);
+
   glutMainLoop();
   return 0;
 }

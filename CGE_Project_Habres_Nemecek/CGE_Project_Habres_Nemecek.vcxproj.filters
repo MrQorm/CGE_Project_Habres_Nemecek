@@ -21,10 +21,60 @@
     <ClCompile Include="planet.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tga.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="planet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tga.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Downloads\9_07\cge\glext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="earthmap.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="elf.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="jupiter.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="jupitermap.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="marsmap.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="mercurymap.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="moonmap.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="neptunemap.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="plutomap.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="saturnmap.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sunmap.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="uranusmap.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="venusmap.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
